@@ -15,7 +15,11 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '390',
     width: '640',
-    videoId: 'dD4XLVyRdD4',
+    // videoId: 'dD4XLVyRdD4',
+    playerVars: {
+      'showinfo': 0,
+      'controls': 0
+    },
     events: {
       'onReady': onPlayerReady,
       'onStateChange': onPlayerStateChange
@@ -46,14 +50,10 @@ function onPlayerStateChange(event) {
 }
 
 var viewCountThreshold = 500;
-var keywordBlacklist = ["pronounce", "say", "vocabulary", "spelling", "mean", "definition", "slideshow"]
+var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"]
 
 function randomWord() {
   var requestStr = "http://randomword.setgetgo.com/get.php";
-  // $.getJSON(requestStr).then(function(responseJSON0) {
-  //   randomVideo(responseJSON0);
-  // });
-
   $.ajax({
       type: "GET",
       url: requestStr,
@@ -103,6 +103,8 @@ function isBlacklisted(title, description) {
 
 $(document).ready(function() {
 
+  randomWord();
+
   $("#changeVideo").click(function(event) {
     event.preventDefault()
     console.log("changeVideo clicked");
@@ -137,7 +139,7 @@ $(document).ready(function() {
     $("input#videoUrl").val("");
   });
 
-  $("#randomVideo").click(function(event) {
+  $("#next").click(function(event) {
     event.preventDefault();
     console.log("randomVideo clicked");
     randomWord();
