@@ -1,6 +1,3 @@
-var queue = [];
-var title = "";
-
 // 2. This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 
@@ -106,7 +103,7 @@ function randomWord() {
   // } else {
   //   randomWord2();
   // }
-  randomWord4();
+  randomWord3();
 }
 
 function randomWord1() {
@@ -154,24 +151,6 @@ function randomWord3() {
 
 function randomWord3Helper(data) {
   console.log("using en.wikipedia.org");
-  var dataId = Object.keys(data.query.pages)[0];
-  var word = data.query.pages[dataId.toString()].title;
-  randomVideo(word);
-}
-
-function randomWord4() {
-
-  var requestStr = 'https://ru.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
-  $.ajax({
-      type: "GET",
-      url: requestStr,
-      dataType: "jsonp",
-      jsonpCallback: 'randomWord4Helper'
-  });
-}
-
-function randomWord4Helper(data) {
-  console.log("using ru.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
   randomVideo(word);
