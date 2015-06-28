@@ -30,12 +30,12 @@ function onYouTubeIframeAPIReady() {
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
 
-    randomWord2();
+    randomWord();
 
     $("#next").click(function(event) {
       event.preventDefault();
       console.log("randomVideo clicked");
-      randomWord2();
+      randomWord();
     });
 
     drawPage = function drawPage() {
@@ -90,7 +90,7 @@ function onPlayerStateChange(event) {
       console.log("video finished! nextVideo = " + nextVideo.title);
       player.loadVideoById(nextVideo.id);
     } else {
-      randomWord2();
+      randomWord();
     }
     drawPage();
   }
@@ -147,17 +147,17 @@ function randomVideo(word) {
   $.getJSON(url).then(function(responseJSON) {
     if (responseJSON.items.length < 1) {
       console.log("No videos found for " + word + "Restarting search.");
-      randomWord2();
+      randomWord();
     } else {
         var videoId = responseJSON.items[0].id.videoId;
         var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
         $.getJSON(url2).then(function(responseJSON2) {
           if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
             console.log("View count too high. Restarting search.");
-            randomWord2();
+            randomWord();
           } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
             console.log("Title: " + responseJSON2.items[0].snippet.title + " - Description: " + responseJSON2.items[0].snippet.description + " contains blacklisted word. Restarting search.")
-            randomWord2();
+            randomWord();
           } else {
             console.log("Success! Video ID = " + responseJSON2.items[0].id);
             player.loadVideoById(responseJSON2.items[0].id);
