@@ -35,13 +35,6 @@ function onPlayerReady(event) {
       randomWord();
     });
 
-    drawPage = function drawPage() {
-      $("#queue").empty();
-      for(var i = 0; i < queue.length; i++) {
-        $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/> ' + parseDuration(queue[i].duration) + '<p>' + queue[i].title + '</p>' + '</li> <hr>');
-      }
-    }
-
     function getIdFromUrl(url) {
       var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
       var match = url.match(regExp);
@@ -82,14 +75,7 @@ function onPlayerReady(event) {
 var done = false;
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
-    if(queue.length > 0) {
-      nextVideo = queue.shift();
-      console.log("video finished! nextVideo = " + nextVideo.title);
-      player.loadVideoById(nextVideo.id);
-    } else {
-      randomWord();
-    }
-    drawPage();
+    randomWord();
   }
 }
 
