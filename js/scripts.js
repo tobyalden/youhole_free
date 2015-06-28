@@ -29,7 +29,54 @@ function onYouTubeIframeAPIReady() {
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  // event.target.playVideo();
+
+    randomWord2();
+
+    $("#next").click(function(event) {
+      event.preventDefault();
+      console.log("randomVideo clicked");
+      randomWord2();
+    });
+
+    drawPage = function drawPage() {
+      $("#queue").empty();
+      for(var i = 0; i < queue.length; i++) {
+        $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/> ' + parseDuration(queue[i].duration) + '<p>' + queue[i].title + '</p>' + '</li> <hr>');
+      }
+    }
+
+    function getIdFromUrl(url) {
+      var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      var match = url.match(regExp);
+      if (match && match[2].length == 11) {
+        return match[2];
+      } else {
+        console.log("Error: Invalid URL");
+      }
+    }
+
+    // i.e. PT10M PT1M47S PT1H1S
+    function parseDuration(duration) {
+      var returnStr = "";
+
+      var numberRegex = /(\d+)/g;
+      var numericArray = duration.match(numberRegex);
+
+      var letterRegex = /[a-zA-Z]+/g;
+      var letterArray = duration.match(letterRegex);
+      letterArray.shift();
+
+      var durationUnits = {
+        "S": " sec ",
+        "M": " min ",
+        "H": " hour "
+      };
+
+      for(var i = 0; i < numericArray.length; i++) {
+        returnStr += numericArray[i] + durationUnits[letterArray[i]];
+      }
+      return returnStr;
+    }
 }
 
 // 5. The API calls this function when the player's state changes.
@@ -43,42 +90,74 @@ function onPlayerStateChange(event) {
       console.log("video finished! nextVideo = " + nextVideo.title);
       player.loadVideoById(nextVideo.id);
     } else {
-      randomWord();
+      randomWord2();
     }
     drawPage();
   }
 }
 
 var viewCountThreshold = 500;
-var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"]
+var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
+  var a = Math.random();
+  if(a > 0.5) {
+    randomWord1();
+  } else {
+    randomWord2();
+  }
+}
+
+function randomWord1() {
   var requestStr = "http://randomword.setgetgo.com/get.php";
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomVideo'
+      jsonpCallback: 'randomWord1Helper'
   });
 }
 
-function randomVideo(data) {
-  console.log(data.Word);
-  var url = "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=" + data.Word + "&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
+function randomWord1Helper(data) {
+  console.log("using randomword.setgetgo.com");
+  var word = data.Word;
+  randomVideo(word);
+}
+
+function randomWord2() {
+  var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=15&limit=1&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+  $.ajax({
+      type: "GET",
+      url: requestStr,
+      dataType: "jsonp",
+      jsonpCallback: 'randomWord2Helper'
+  });
+}
+
+function randomWord2Helper(data) {
+  console.log("using api.wordnik.com");
+  var word = data[0].word;
+  randomVideo(word);
+}
+
+function randomVideo(word) {
+  // debugger;
+  console.log(word);
+  var url = "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=" + word + "&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
   $.getJSON(url).then(function(responseJSON) {
     if (responseJSON.items.length < 1) {
-      console.log("No videos found for " + data.Word + "Restarting search.");
-      randomWord();
+      console.log("No videos found for " + word + "Restarting search.");
+      randomWord2();
     } else {
         var videoId = responseJSON.items[0].id.videoId;
         var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
         $.getJSON(url2).then(function(responseJSON2) {
           if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
             console.log("View count too high. Restarting search.");
-            randomWord();
+            randomWord2();
           } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
             console.log("Title: " + responseJSON2.items[0].snippet.title + " - Description: " + responseJSON2.items[0].snippet.description + " contains blacklisted word. Restarting search.")
-            randomWord();
+            randomWord2();
           } else {
             console.log("Success! Video ID = " + responseJSON2.items[0].id);
             player.loadVideoById(responseJSON2.items[0].id);
@@ -87,6 +166,32 @@ function randomVideo(data) {
       }
   });
 }
+
+// function randomVideo(data) {
+//   console.log(data.Word);
+//   var url = "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=" + data.Word + "&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
+//   $.getJSON(url).then(function(responseJSON) {
+//     if (responseJSON.items.length < 1) {
+//       console.log("No videos found for " + data.Word + "Restarting search.");
+//       randomWord();
+//     } else {
+//         var videoId = responseJSON.items[0].id.videoId;
+//         var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
+//         $.getJSON(url2).then(function(responseJSON2) {
+//           if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
+//             console.log("View count too high. Restarting search.");
+//             randomWord();
+//           } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
+//             console.log("Title: " + responseJSON2.items[0].snippet.title + " - Description: " + responseJSON2.items[0].snippet.description + " contains blacklisted word. Restarting search.")
+//             randomWord();
+//           } else {
+//             console.log("Success! Video ID = " + responseJSON2.items[0].id);
+//             player.loadVideoById(responseJSON2.items[0].id);
+//           }
+//         });
+//       }
+//   });
+// }
 
 function isBlacklisted(title, description) {
   title = title.toLowerCase();
@@ -100,89 +205,3 @@ function isBlacklisted(title, description) {
 }
 
 // jQuery
-
-$(document).ready(function() {
-
-  randomWord();
-
-  $("#changeVideo").click(function(event) {
-    event.preventDefault()
-    console.log("changeVideo clicked");
-    var url = $("input#videoUrl").val();
-    var id = getIdFromUrl(url);
-    player.loadVideoById(id);
-    $("input#videoUrl").val("");
-  });
-
-  $("#queueVideo").click(function(event) {
-    event.preventDefault()
-    console.log("queueVideo clicked");
-    var url = $("input#videoUrl").val();
-    var id = getIdFromUrl(url);
-
-    $.getJSON("https://www.googleapis.com/youtube/v3/videos", {
-      key: "AIzaSyDEeNLNCbn1bVKlSr36mhssp37QO8n-Cfw",
-      part: "snippet, contentDetails",
-      id: id
-    }, function(data) {
-      var video = {
-        title: data.items[0].snippet.title,
-        duration: data.items[0].contentDetails.duration,
-        id: id
-      };
-      queue.push(video);
-      drawPage();
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-      $("<p style='color: #F00;'></p>").text(jqXHR.responseText || errorThrown).appendTo("#errors");
-    });
-
-    $("input#videoUrl").val("");
-  });
-
-  $("#next").click(function(event) {
-    event.preventDefault();
-    console.log("randomVideo clicked");
-    randomWord();
-  });
-
-  drawPage = function drawPage() {
-    $("#queue").empty();
-    for(var i = 0; i < queue.length; i++) {
-      $("#queue").append('<li> <img src="http://img.youtube.com/vi/' + queue[i].id + '/default.jpg"/> ' + parseDuration(queue[i].duration) + '<p>' + queue[i].title + '</p>' + '</li> <hr>');
-    }
-  }
-
-  function getIdFromUrl(url) {
-    var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    var match = url.match(regExp);
-    if (match && match[2].length == 11) {
-      return match[2];
-    } else {
-      console.log("Error: Invalid URL");
-    }
-  }
-
-  // i.e. PT10M PT1M47S PT1H1S
-  function parseDuration(duration) {
-    var returnStr = "";
-
-    var numberRegex = /(\d+)/g;
-    var numericArray = duration.match(numberRegex);
-
-    var letterRegex = /[a-zA-Z]+/g;
-    var letterArray = duration.match(letterRegex);
-    letterArray.shift();
-
-    var durationUnits = {
-      "S": " sec ",
-      "M": " min ",
-      "H": " hour "
-    };
-
-    for(var i = 0; i < numericArray.length; i++) {
-      returnStr += numericArray[i] + durationUnits[letterArray[i]];
-    }
-    return returnStr;
-  }
-
-});
