@@ -19,9 +19,15 @@ function onYouTubeIframeAPIReady() {
     },
     events: {
       'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
+      'onStateChange': onPlayerStateChange,
+      'onError': onError
     }
   });
+}
+
+function onError(event) {
+  console.log("Error encountered. Retrying.");
+  randomWord();
 }
 
 // 4. The API will call this function when the video player is ready.
@@ -83,7 +89,7 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.floor(Math.random() * 8) + 1;
+  var a = Math.floor(Math.random() * 7) + 1;
   if(a === 1) {
     randomWord1();
   } else if(a === 2) {
@@ -94,8 +100,10 @@ function randomWord() {
     randomWord4();
   } else if(a === 5) {
     randomWord5();
-  } else {
+  } else if(a === 6) {
     randomWord6();
+  } else if(a === 7) {
+    randomWord7();
   }
 }
 
@@ -185,10 +193,36 @@ function randomWord5Helper(data) {
   randomVideo(word);
 }
 
+
 function randomWord6() {
   var word = chance.word({syllables: 3});
   randomVideo(word);
 }
+
+function randomWord7() {
+
+  var requestStr = 'https://vi.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
+  $.ajax({
+      type: "GET",
+      url: requestStr,
+      dataType: "jsonp",
+      jsonpCallback: 'randomWord7Helper'
+  });
+}
+
+// I don't know why this words, because the word it passes is actually an Object, but I'm leaving it in anyway.
+function randomWord7Helper(data) {
+  console.log("using vi.wikipedia.org");
+
+  var dataId = Object.keys(data.query.pages)[0];
+  var word = data.query.pages[dataId.toString()].title;
+
+  var regExp = /(?:^|(?:\.\s))(\w+)/;
+  word = word.match(regExp);
+
+  randomVideo(word);
+}
+
 
 function randomVideo(word) {
   // debugger;
