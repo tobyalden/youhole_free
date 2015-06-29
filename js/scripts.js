@@ -89,7 +89,7 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.floor(Math.random() * 7) + 1;
+  var a = Math.floor(Math.random() * 12) + 1;
   if(a === 1) {
     randomWord1();
   } else if(a === 2) {
@@ -101,12 +101,13 @@ function randomWord() {
   } else if(a === 5) {
     randomWord5();
   } else if(a === 6) {
-    randomWord6();
-  } else if(a === 7) {
     randomWord7();
+  } else {
+    randomWord6();
   }
 }
 
+// Random english word. Often a obscure medical or scientific term.
 function randomWord1() {
   var requestStr = "http://randomword.setgetgo.com/get.php";
   $.ajax({
@@ -123,6 +124,7 @@ function randomWord1Helper(data) {
   randomVideo(word);
 }
 
+// Random english word. Less obscure than randomWord1().
 function randomWord2() {
   var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=15&limit=1&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
   $.ajax({
@@ -139,6 +141,7 @@ function randomWord2Helper(data) {
   randomVideo(word);
 }
 
+// Random English Wikipedia page title.
 function randomWord3() {
 
   var requestStr = 'https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
@@ -156,6 +159,8 @@ function randomWord3Helper(data) {
   var word = data.query.pages[dataId.toString()].title;
   randomVideo(word);
 }
+
+// Random Spanish Wikipedia page title.
 
 function randomWord4() {
 
@@ -175,6 +180,7 @@ function randomWord4Helper(data) {
   randomVideo(word);
 }
 
+// Random Dutch Wikipedia page title.
 function randomWord5() {
 
   var requestStr = 'https://de.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
@@ -193,12 +199,13 @@ function randomWord5Helper(data) {
   randomVideo(word);
 }
 
-
+// A "truly random" nonsense phrase, i.e. "behuga"
 function randomWord6() {
   var word = chance.word({syllables: 3});
   randomVideo(word);
 }
 
+// Vietnamese Wikipedia.
 function randomWord7() {
 
   var requestStr = 'https://vi.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
