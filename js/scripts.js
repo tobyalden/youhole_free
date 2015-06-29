@@ -41,6 +41,7 @@ function onPlayerReady(event) {
       randomWord();
     });
 
+
     function getIdFromUrl(url) {
       var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
       var match = url.match(regExp);
@@ -258,32 +259,6 @@ function randomVideo(word) {
   });
 }
 
-// function randomVideo(data) {
-//   console.log(data.Word);
-//   var url = "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=" + data.Word + "&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
-//   $.getJSON(url).then(function(responseJSON) {
-//     if (responseJSON.items.length < 1) {
-//       console.log("No videos found for " + data.Word + "Restarting search.");
-//       randomWord();
-//     } else {
-//         var videoId = responseJSON.items[0].id.videoId;
-//         var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
-//         $.getJSON(url2).then(function(responseJSON2) {
-//           if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
-//             console.log("View count too high. Restarting search.");
-//             randomWord();
-//           } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
-//             console.log("Title: " + responseJSON2.items[0].snippet.title + " - Description: " + responseJSON2.items[0].snippet.description + " contains blacklisted word. Restarting search.")
-//             randomWord();
-//           } else {
-//             console.log("Success! Video ID = " + responseJSON2.items[0].id);
-//             player.loadVideoById(responseJSON2.items[0].id);
-//           }
-//         });
-//       }
-//   });
-// }
-
 function isBlacklisted(title, description) {
   title = title.toLowerCase();
   description = description.toLowerCase();
@@ -295,4 +270,12 @@ function isBlacklisted(title, description) {
   return false;
 }
 
-// jQuery
+
+$(document).ready(function() {
+  $(document).on("keyup", function(e) {
+    var code = e.which;
+    if (code == 40) {
+      randomWord();
+    }
+  });
+});
