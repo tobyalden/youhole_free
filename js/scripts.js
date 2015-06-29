@@ -83,16 +83,17 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.random();
-  if(a > 0.25) {
-    randomWord1();
-  } else if(a > 0.5) {
-    randomWord2();
-  } else if(a > 0.75) {
-    randomWord3();
-  } else {
-    randomWord4();
-  }
+  // var a = Math.floor(Math.random() * 4) + 1;
+  // if(a === 1) {
+  //   randomWord1();
+  // } else if(a === 2) {
+  //   randomWord2();
+  // } else if(a === 3) {
+  //   randomWord3();
+  // } else if(a === 4) {
+  //   randomWord4();
+  // }
+  randomWord5();
 }
 
 function randomWord1() {
@@ -158,6 +159,24 @@ function randomWord4() {
 
 function randomWord4Helper(data) {
   console.log("using es.wikipedia.org");
+  var dataId = Object.keys(data.query.pages)[0];
+  var word = data.query.pages[dataId.toString()].title;
+  randomVideo(word);
+}
+
+function randomWord5() {
+
+  var requestStr = 'https://de.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
+  $.ajax({
+      type: "GET",
+      url: requestStr,
+      dataType: "jsonp",
+      jsonpCallback: 'randomWord5Helper'
+  });
+}
+
+function randomWord5Helper(data) {
+  console.log("using de.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
   randomVideo(word);
