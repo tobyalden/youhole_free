@@ -83,7 +83,7 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.floor(Math.random() * 5) + 1;
+  var a = Math.floor(Math.random() * 8) + 1;
   if(a === 1) {
     randomWord1();
   } else if(a === 2) {
@@ -93,7 +93,9 @@ function randomWord() {
   } else if(a === 4) {
     randomWord4();
   } else if(a === 5) {
-    randomWord5();  
+    randomWord5();
+  } else {
+    randomWord6();
   }
 }
 
@@ -180,6 +182,11 @@ function randomWord5Helper(data) {
   console.log("using de.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
+  randomVideo(word);
+}
+
+function randomWord6() {
+  var word = chance.word({syllables: 3});
   randomVideo(word);
 }
 
