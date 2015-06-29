@@ -90,7 +90,7 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.floor(Math.random() * 9) + 1;
+  var a = Math.floor(Math.random() * 10) + 1;
   if(a === 1) {
     randomObscureWord();
   } else if(a === 2) {
@@ -103,9 +103,28 @@ function randomWord() {
     dutchWikipedia();
   } else if(a === 6) {
     vietnameseWikipedia();
+  } else if(a === 7) {
+    randomEnglishPhrase();
   } else {
     nonsenseWord();
   }
+}
+
+// Random english phrase of two words. Uses api.wordnik.com
+function randomEnglishPhrase() {
+  var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=2&maxLength=4&limit=2&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+  $.ajax({
+      type: "GET",
+      url: requestStr,
+      dataType: "jsonp",
+      jsonpCallback: 'randomEnglishPhraseHelper'
+  });
+}
+
+function randomEnglishPhraseHelper(data) {
+  console.log("using api.wordnik.com (two words)");
+  var word = data[0].word + " " + data[1].word;
+  randomVideo(word);
 }
 
 // Random english word. Often a obscure medical or scientific term.
@@ -212,7 +231,6 @@ function vietnameseWikipedia() {
   });
 }
 
-// I don't know why this words, because the word it passes is actually an Object, but I'm leaving it in anyway.
 function vietnameseWikipediaHelper(data) {
   console.log("using vi.wikipedia.org");
 
