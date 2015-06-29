@@ -83,17 +83,18 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  // var a = Math.floor(Math.random() * 4) + 1;
-  // if(a === 1) {
-  //   randomWord1();
-  // } else if(a === 2) {
-  //   randomWord2();
-  // } else if(a === 3) {
-  //   randomWord3();
-  // } else if(a === 4) {
-  //   randomWord4();
-  // }
-  randomWord5();
+  var a = Math.floor(Math.random() * 5) + 1;
+  if(a === 1) {
+    randomWord1();
+  } else if(a === 2) {
+    randomWord2();
+  } else if(a === 3) {
+    randomWord3();
+  } else if(a === 4) {
+    randomWord4();
+  } else if(a === 5) {
+    randomWord5();  
+  }
 }
 
 function randomWord1() {
