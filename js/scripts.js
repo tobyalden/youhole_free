@@ -14,7 +14,7 @@ function onYouTubeIframeAPIReady() {
     width: '640',
     // videoId: 'dD4XLVyRdD4',
     playerVars: {
-      'showinfo': 0,
+      'showinfo': 0, 
       'controls': 0
     },
     events: {
@@ -90,71 +90,71 @@ var viewCountThreshold = 500;
 var keywordBlacklist = ["pronounc", "say", "vocabulary", "spelling", "mean", "definition", "slideshow", "full", "ebook"];
 
 function randomWord() {
-  var a = Math.floor(Math.random() * 12) + 1;
+  var a = Math.floor(Math.random() * 9) + 1;
   if(a === 1) {
-    randomWord1();
+    randomObscureWord();
   } else if(a === 2) {
-    randomWord2();
+    randomEnglishWord();
   } else if(a === 3) {
-    randomWord3();
+    englishWikipedia();
   } else if(a === 4) {
-    randomWord4();
+    spanishWikipedia();
   } else if(a === 5) {
-    randomWord5();
+    dutchWikipedia();
   } else if(a === 6) {
-    randomWord7();
+    vietnameseWikipedia();
   } else {
-    randomWord6();
+    nonsenseWord();
   }
 }
 
 // Random english word. Often a obscure medical or scientific term.
-function randomWord1() {
+function randomObscureWord() {
   var requestStr = "http://randomword.setgetgo.com/get.php";
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord1Helper'
+      jsonpCallback: 'randomObscureWordHelper'
   });
 }
 
-function randomWord1Helper(data) {
+function randomObscureWordHelper(data) {
   console.log("using randomword.setgetgo.com");
   var word = data.Word;
   randomVideo(word);
 }
 
-// Random english word. Less obscure than randomWord1().
-function randomWord2() {
+// Random english word. Less obscure than randomObscureWord().
+function randomEnglishWord() {
   var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=5&maxLength=15&limit=1&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord2Helper'
+      jsonpCallback: 'randomEnglishWordHelper'
   });
 }
 
-function randomWord2Helper(data) {
+function randomEnglishWordHelper(data) {
   console.log("using api.wordnik.com");
   var word = data[0].word;
   randomVideo(word);
 }
 
 // Random English Wikipedia page title.
-function randomWord3() {
+function englishWikipedia() {
 
   var requestStr = 'https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord3Helper'
+      jsonpCallback: 'englishWikipediaHelper'
   });
 }
 
-function randomWord3Helper(data) {
+function englishWikipediaHelper(data) {
   console.log("using en.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
@@ -163,18 +163,18 @@ function randomWord3Helper(data) {
 
 // Random Spanish Wikipedia page title.
 
-function randomWord4() {
+function spanishWikipedia() {
 
   var requestStr = 'https://es.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord4Helper'
+      jsonpCallback: 'spanishWikipediaHelper'
   });
 }
 
-function randomWord4Helper(data) {
+function spanishWikipediaHelper(data) {
   console.log("using es.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
@@ -182,44 +182,38 @@ function randomWord4Helper(data) {
 }
 
 // Random Dutch Wikipedia page title.
-function randomWord5() {
+function dutchWikipedia() {
 
   var requestStr = 'https://de.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord5Helper'
+      jsonpCallback: 'dutchWikipediaHelper'
   });
 }
 
-function randomWord5Helper(data) {
+function dutchWikipediaHelper(data) {
   console.log("using de.wikipedia.org");
   var dataId = Object.keys(data.query.pages)[0];
   var word = data.query.pages[dataId.toString()].title;
   randomVideo(word);
 }
 
-// A "truly random" nonsense phrase, i.e. "behuga"
-function randomWord6() {
-  var word = chance.word({syllables: 3});
-  randomVideo(word);
-}
-
 // Vietnamese Wikipedia.
-function randomWord7() {
+function vietnameseWikipedia() {
 
   var requestStr = 'https://vi.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exchars=500&format=json';
   $.ajax({
       type: "GET",
       url: requestStr,
       dataType: "jsonp",
-      jsonpCallback: 'randomWord7Helper'
+      jsonpCallback: 'vietnameseWikipediaHelper'
   });
 }
 
 // I don't know why this words, because the word it passes is actually an Object, but I'm leaving it in anyway.
-function randomWord7Helper(data) {
+function vietnameseWikipediaHelper(data) {
   console.log("using vi.wikipedia.org");
 
   var dataId = Object.keys(data.query.pages)[0];
@@ -228,6 +222,18 @@ function randomWord7Helper(data) {
   var regExp = /(?:^|(?:\.\s))(\w+)/;
   word = word.match(regExp);
 
+  if(word === null) {
+    randomWord();
+  } else {
+    word = word[0];
+    randomVideo(word);
+  }
+
+}
+
+// A "truly random" nonsense phrase, i.e. "behuga"
+function nonsenseWord() {
+  var word = chance.word({syllables: 3});
   randomVideo(word);
 }
 
@@ -238,7 +244,7 @@ function randomVideo(word) {
   var url = "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=" + word + "&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
   $.getJSON(url).then(function(responseJSON) {
     if (responseJSON.items.length < 1) {
-      console.log("No videos found for " + word + "Restarting search.");
+      console.log("No videos found for " + word + ". Restarting search.");
       randomWord();
     } else {
         var videoId = responseJSON.items[0].id.videoId;
