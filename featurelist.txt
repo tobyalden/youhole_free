@@ -1,7 +1,11 @@
 YOUHOLE FEATURE LIST:
 
-- MASS PREV-WATCHED LIST - NO ONE!!! EVER WATCHES THE SAME VIDEO TWICE. YOUHOLE DOESN'T EVEN SHOW THE SAME VIDEO TWICE.
-- RESPONSIVE BUTTON + MAYBE SMARTER DESIGN OVERALL . . E.G., THE BUTTON APPEARS WHEN YOU MOVE THE MOUSE ANYWHERE, BUT DISAPPEARS WHEN YOU HOLD THE MOUSE STILL. MAYBE
-- FOREIGN LANGUAGE NOVELTY GENERATORS - NOT AS EASY AS I THOUGHT...
-- DON'T ALWAYS PICK THE FIRST ONE
-
+- All successful video IDs are stored and blacklisted
+- Buffering (Two IFrames)
+- Responsive button (animates on click & disappears / reappears based on mouse movement)
+- Keyboard controls
+- Better foreign language support (e.g., using dictionaries rather than nonsense phrases)
+- Don't always pick the first video
+- Mobile / Non-Chrome support (use v2 API)
+- Anchor & shrink frame to fit in window
+- When video finishes, hide title and related videos.
