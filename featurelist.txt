@@ -4,7 +4,7 @@ YOUHOLE FEATURE LIST:
 - Buffering (Two IFrames)
 - Responsive button (animates on click & disappears / reappears based on mouse movement)
 - Keyboard controls
-- Better foreign language support (e.g., using dictionaries rather than nonsense phrases)
+- Better foreign language support (e.g., using dictionaries rather than nonsense phrases or using Google Translate)
 - Don't always pick the first video
 - Mobile / Non-Chrome support (use v2 API)
 - Anchor & shrink frame to fit in window
