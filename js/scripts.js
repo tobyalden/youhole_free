@@ -279,10 +279,11 @@ function onYouTubeIframeAPIReady() {
   player = new YT.Player('player', {
     height: '390',
     width: '640',
-    // videoId: 'dD4XLVyRdD4',
     playerVars: {
       'showinfo': 0, 
-      'controls': 0
+      'controls': 0,
+      'rel': 0,
+      'showinfo': 0
     },
     events: {
       'onReady': onPlayerReady,
