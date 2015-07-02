@@ -7,5 +7,3 @@ YOUHOLE FEATURE LIST:
 - Better foreign language support (e.g., using dictionaries rather than nonsense phrases or using Google Translate)
 - Don't always pick the first video
 - Mobile / Non-Chrome support (use v2 API)
-- Anchor & shrink frame to fit in window
-- When video finishes, hide title and related videos.

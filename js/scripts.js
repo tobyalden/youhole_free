@@ -5,7 +5,7 @@ var currentAlgo = 0;
 function randomWord() {
 
   if(currentAlgo === 0) {
-    currentAlgo = Math.floor(Math.random() * 6) + 1;
+    currentAlgo = Math.floor(Math.random() * 7) + 1;
   }
 
   if(currentAlgo === 1) {
@@ -20,12 +20,22 @@ function randomWord() {
     nonsenseChinesePhrase();
   } else if(currentAlgo === 6) {
     nonsenseJapanesePhrase();
+  } else if(currentAlgo === 7) {
+    nonsenseCyrillic();
   }
+  
 }
 
-// function randomWord() {
-//   nonsenseKoreanPhrase();
-// }
+function nonsenseCyrillic() {
+  // U+0400..U+04FF
+   var word = getCyrillicChar() + " " + chance.word({syllables: 1});
+   console.log("nonsenseCyrillic = " + word);
+   randomVideo(word);
+}
+
+function getCyrillicChar() {
+  return String.fromCharCode(0x0400 + Math.random() * (0x04FF-0x0400+1))
+}
 
 // ---------------------------- RANDOM WORD/PHRASE GENERATORS ----------------------------
 
