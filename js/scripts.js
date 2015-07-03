@@ -388,3 +388,10 @@ function onPlayerStateChange(event) {
     $('#nextImg').removeClass('animated bounceOutDown');
   }
 }
+
+$(document).on("keydown", function (e) {
+  if(e.keyCode === 32 || e.keyCode === 40) {
+    $('#nextImg').addClass('animated bounceOutDown');
+    randomWord();
+  }
+});
