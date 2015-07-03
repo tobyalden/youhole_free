@@ -14,7 +14,7 @@ body  {
 }
 
 #next{
-  background: url('../public/img/down.png') center no-repeat;
+  /*background: url('../public/img/down.png') center no-repeat;*/
   /*background-color:rgba(38, 38, 38, 0);*/
   width:100vw;
   height:150px;
@@ -22,8 +22,12 @@ body  {
   bottom: 0px;
   z-index: 2;
   opacity: 0;
-  animation-name: next-off;
-  animation-duration: .5s;
+}
+
+#nextImg {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #next:hover{
