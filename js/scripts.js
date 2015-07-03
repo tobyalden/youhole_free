@@ -229,7 +229,9 @@ function randomVideoAjaxHelper(responseJSON) {
     console.log("No videos found for search term. Restarting search.");
     randomWord();
   } else {
-    var videoId = responseJSON.items[0].id.videoId;
+    var videoChoice = Math.floor(Math.random() * responseJSON.items.length);
+    console.log("choosing video #" + videoChoice + " of " + responseJSON.items.length);
+    var videoId = responseJSON.items[videoChoice].id.videoId;
     var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
     $.getJSON(url2).then(function(responseJSON2) {
       if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
