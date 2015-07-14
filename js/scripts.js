@@ -209,8 +209,6 @@ $(document).on("keydown", function (e) {
 
 // ---------------------------- RANDOM WORD/PHRASE GENERATORS ----------------------------
 
-// FAST GENERATORS (USE RANDOM UNICODE BLOCKS OR CHANCE.JS)
-
 // 4. A "truly random" nonsense phrase, i.e. "behuga"
 function nonsenseWord() {
   var word = chance.word({syllables: 2});
@@ -276,4 +274,16 @@ function getCyrillicChar() {
 
 function getRandomUnicodeCharacter() {
   return String.fromCharCode(0x0000 + Math.random() * (0x0000-0xFFFD+1))
+}
+
+function getRandomHangul() {
+  return String.fromCharCode(0xAC00 + Math.random() * (0xAC00-0xD7AF+1))
+}
+
+function getRandomEthiopic() {
+  //U+1200..U+137F
+}
+
+function getRandomArabic() {
+  //U+0600..U+06FF
 }
