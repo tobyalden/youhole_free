@@ -218,7 +218,15 @@ function randomVideoAjaxHelper(responseJSON) {
       } else {
         console.log("Success! Video ID = " + responseJSON2.items[0].id);
         currentAlgo = 0;
-        player.loadVideoById(responseJSON2.items[0].id);
+
+        playlist.loadingPlayer.loadVideoById(responseJSON2.items[0].id);
+        switchPlayers();
+
+        // on the very first search, find two videos
+        if (playlist.firstSearch) {
+          playlist.firstSearch = false;
+          randomWord();
+        }
       }
     });
   }
@@ -274,14 +282,35 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 // 3. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
-var player;
+
+var playlist = {
+  firstCue:        true,
+  firstSearch:     true,
+  playersReady:    false,
+  currentPlayer:   null,
+  loadingPlayer:   null
+}
+
 function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
+  playlist.loadingPlayer = new YT.Player('player1', {
     height: '390',
     width: '640',
-    // videoId: 'dD4XLVyRdD4',
     playerVars: {
-      'showinfo': 0, 
+      'showinfo': 0,
+      'controls': 0
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange,
+      'onError': onError
+    }
+  });
+
+  playlist.currentPlayer = new YT.Player('player2', {
+    height: '390',
+    width: '640',
+    playerVars: {
+      'showinfo': 0,
       'controls': 0
     },
     events: {
@@ -292,6 +321,20 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
+function switchPlayers() {
+  var tempPlayer = playlist.currentPlayer;
+  playlist.currentPlayer = playlist.loadingPlayer;
+  playlist.loadingPlayer = tempPlayer;
+}
+
+function show(player) {
+  $("#" + player.m.id).show();
+}
+
+function hide(player) {
+  $("#" + player.m.id).hide();
+}
+
 function onError(event) {
   console.log("Error encountered. Retrying.");
   randomWord();
@@ -299,15 +342,26 @@ function onError(event) {
 
 // 4. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
+    //only add the click event listener once (when the first video has loaded)
+    if (!playlist.playersReady) {
+      playlist.playersReady = true;
 
-    randomWord();
-
-    $("#next").click(function(event) {
-      event.preventDefault();
-      console.log("randomVideo clicked");
+      show(playlist.loadingPlayer);
+      hide(playlist.currentPlayer);
       randomWord();
-    });
 
+      $("#next").click(function(event) {
+        event.preventDefault();
+        console.log("randomVideo clicked");
+
+        show(playlist.currentPlayer);
+        hide(playlist.loadingPlayer);
+        playlist.currentPlayer.playVideo();
+
+        //find a video to buffer with the loadingPlayer
+        randomWord();
+      });
+    }
 
     function getIdFromUrl(url) {
       var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -346,9 +400,16 @@ function onPlayerReady(event) {
 // 5. The API calls this function when the player's state changes.
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
-var done = false;
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
     randomWord();
+  } else if (event.data == YT.PlayerState.CUED){
+    if (playlist.firstCue) {
+      //do not pause the very first video loaded
+      playlist.firstCue = false;
+    } else {
+      //once the video is cued, pause it
+      event.target.pauseVideo();
+    }
   }
 }
