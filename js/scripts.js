@@ -221,6 +221,7 @@ function randomVideoAjaxHelper(responseJSON) {
 
         playlist.loadingPlayer.loadVideoById(responseJSON2.items[0].id);
         switchPlayers();
+        playlist.loadingPlayerPaused = false;
 
         // on the very first search, find two videos
         if (playlist.firstSearch) {
@@ -284,11 +285,12 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 //    after the API code downloads.
 
 var playlist = {
-  firstCue:        true,
-  firstSearch:     true,
-  playersReady:    false,
-  currentPlayer:   null,
-  loadingPlayer:   null
+  firstCue:            true,
+  firstSearch:         true,
+  playersReady:        false,
+  currentPlayer:       null,
+  loadingPlayer:       null,
+  loadingPlayerPaused: false
 }
 
 function onYouTubeIframeAPIReady() {
@@ -297,7 +299,8 @@ function onYouTubeIframeAPIReady() {
     width: '640',
     playerVars: {
       'showinfo': 0,
-      'controls': 0
+      'controls': 0,
+      'autoplay': 0
     },
     events: {
       'onReady': onPlayerReady,
@@ -311,7 +314,8 @@ function onYouTubeIframeAPIReady() {
     width: '640',
     playerVars: {
       'showinfo': 0,
-      'controls': 0
+      'controls': 0,
+      'autoplay': 0
     },
     events: {
       'onReady': onPlayerReady,
@@ -354,9 +358,9 @@ function onPlayerReady(event) {
         event.preventDefault();
         console.log("randomVideo clicked");
 
+        playlist.currentPlayer.playVideo();
         show(playlist.currentPlayer);
         hide(playlist.loadingPlayer);
-        playlist.currentPlayer.playVideo();
 
         //find a video to buffer with the loadingPlayer
         randomWord();
@@ -401,15 +405,16 @@ function onPlayerReady(event) {
 //    The function indicates that when playing a video (state=1),
 //    the player should play for six seconds and then stop.
 function onPlayerStateChange(event) {
+  if (playlist.firstCue) {
+    //do not pause the very first video loaded
+    playlist.firstCue = false;
+    event.target.playVideo()
+  } else if (event.data == YT.PlayerState.PLAYING && event.target == playlist.currentPlayer && !playlist.loadingPlayerPaused){
+    //once the video starts playing, pause it
+    playlist.loadingPlayerPaused = true;
+    event.target.pauseVideo();
+  }
   if (event.data == YT.PlayerState.ENDED) {
     randomWord();
-  } else if (event.data == YT.PlayerState.CUED){
-    if (playlist.firstCue) {
-      //do not pause the very first video loaded
-      playlist.firstCue = false;
-    } else {
-      //once the video is cued, pause it
-      event.target.pauseVideo();
-    }
   }
 }
