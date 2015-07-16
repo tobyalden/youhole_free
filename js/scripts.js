@@ -415,7 +415,11 @@ function onPlayerStateChange(event) {
     playlist.loadingPlayerPaused = true;
     event.target.pauseVideo();
   }
+
   if (event.data == YT.PlayerState.ENDED) {
+    playlist.currentPlayer.playVideo();
+    show(playlist.currentPlayer);
+    hide(playlist.loadingPlayer);
     randomWord();
   }
 }
