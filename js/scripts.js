@@ -5,7 +5,7 @@ var currentAlgo = 1;
 // v1. [25, 2, 5, 11, 12, 2, 2, 11]
 var successMetrics = [0, 0, 0, 0, 0, 0, 0, 0];
 var algoNames = ['nonsenseWord', 'nonsenseChinesePhrase', 'nonsenseJapanesePhrase', 'nonsenseCyrillic',
-                'randomCharacters', 'randomCharacters', 'nonsenseHangul', 'nonsenseLatin'];
+                'randomCharacters', 'nonsenseHangul', 'nonsenseArabic', 'nonsenseLatin'];
 
 // when you hit next, if there's a video id in sessionstorage, immediately play that video, then find another suitable id and put it in sessionstorage
 //                    if there isn't a video id in sessionstoage, find TWO suitable ids, play one, and stick the other in sessionstorage
@@ -128,6 +128,7 @@ function findAndStoreVideoHelper(responseJSON) {
         console.log("[STORE] Success with " + algoNames[currentAlgo-1] + "! Storing video ID.");
         successMetrics[currentAlgo-1] += 1;
         sessionStorage.setItem('nextVideoId', responseJSON2.items[0].id);
+        // findAndStoreVideo();
       }
     });
   }
