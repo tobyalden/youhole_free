@@ -7,7 +7,7 @@ var currentAlgoStore = 0;
 
 function getRandomPhrase() {
 
-  algo = Math.floor(Math.random() * 5) + 1;
+  algo = Math.floor(Math.random() * 8) + 1;
 
   if(algo === 1) {
     return nonsenseWord();
@@ -17,8 +17,14 @@ function getRandomPhrase() {
     return nonsenseJapanesePhrase();
   } else if(algo === 4) {
     return nonsenseCyrillic();
-  } else {
+  } else if(algo === 5) {
     return randomCharacters();
+  } else if(algo === 6) {
+    return nonsenseHangul();
+  } else if(algo === 7) {
+    return nonsenseArabic();
+  } else if(algo === 8) {
+    return nonsenseLatin();
   }
 
 }
@@ -43,7 +49,7 @@ function playVideo(id) {
 function findAndPlayVideo() {
   console.log('findAndPlayVideo() was called.')
   var word = getRandomPhrase();
-  console.log('[PLAY] word = ' + word);
+  console.log('[PLAY] word = ' + decodeURIComponent(word));
   var requestStr = 'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=' + word + '&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60';
   $.ajax({
       type: "GET",
@@ -83,7 +89,7 @@ function findAndStoreVideo() {
 
   console.log('findAndStoreVideo() was called.')
   var word = getRandomPhrase();
-  console.log('[STORE] word = ' + word);
+  console.log('[STORE] word = ' + decodeURIComponent(word));
   var requestStr = 'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=' + word + '&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60';
   $.ajax({
       type: "GET",
@@ -228,7 +234,7 @@ function getRandomChineseCharacter() {
   return String.fromCharCode(0x4E00 + Math.random() * (0x62FF-0x4E00+1));
 }
 
-// 6. Two random chinese characters with a space between them
+// 6. Two random japanese characters with a space between them
 function nonsenseJapanesePhrase() {
     var word = getRandomJapaneseCharacter() + getRandomJapaneseCharacter();
     word = encodeURIComponent(word);
@@ -268,6 +274,28 @@ function randomCharacters() {
   return word;
 }
 
+function nonsenseHangul() {
+  var word = getRandomHangul() + " " + getRandomHangul();
+  word = encodeURIComponent(word);
+  return word;
+}
+
+function nonsenseArabic() {
+  var word = getRandomArabic() + getRandomArabic() + getRandomArabic();
+  word = encodeURIComponent(word);
+  return word;
+}
+
+function nonsenseLatin() {
+  var word = getLatinChar() + chance.string({length: 1, pool: 'abcdefghijklmnopqrstuvwxyz'}) + getLatinChar();
+  word = encodeURIComponent(word);
+  return word;
+}
+
+function getLatinChar() {
+  return String.fromCharCode(0x00C0 + Math.random() * (0x00C0-0x00FF+1))
+}
+
 function getCyrillicChar() {
   return String.fromCharCode(0x0400 + Math.random() * (0x04FF-0x0400+1))
 }
@@ -281,9 +309,9 @@ function getRandomHangul() {
 }
 
 function getRandomEthiopic() {
-  //U+1200..U+137F
+  return String.fromCharCode(0x1200 + Math.random() * (0x1200-0x137F+1))
 }
 
 function getRandomArabic() {
-  //U+0600..U+06FF
+  return String.fromCharCode(0x0600 + Math.random() * (0x0600-0x06FF+1))
 }
