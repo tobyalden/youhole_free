@@ -28,7 +28,6 @@ function nextVideo() {
   if(nextVideoId === null) {
     console.log('nextVideoId not found in sessionStorage. Calling findAndPlayVideo() & findAndStoreVideo().');
     findAndPlayVideo();
-    findAndStoreVideo();
   } else {
     console.log('nextVideoId found in sessionstorage. Calling playVideo(nextVideoId) & findAndStoreVideo()')
     playVideo(nextVideoId);
@@ -74,6 +73,7 @@ function findAndPlayVideoHelper(responseJSON) {
       } else {
         console.log("[PLAY] Success! Immediately playing video.");
         player.loadVideoById(responseJSON2.items[0].id);
+        findAndStoreVideo();
       }
     });
   }
