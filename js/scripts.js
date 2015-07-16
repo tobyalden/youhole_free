@@ -358,6 +358,7 @@ function onPlayerReady(event) {
         event.preventDefault();
         console.log("randomVideo clicked");
 
+        playlist.loadingPlayer.pauseVideo();
         playlist.currentPlayer.playVideo();
         show(playlist.currentPlayer);
         hide(playlist.loadingPlayer);
