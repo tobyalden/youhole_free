@@ -10,6 +10,30 @@ var algoNames = ['nonsenseWord', 'nonsenseChinesePhrase', 'nonsenseJapanesePhras
 var isPopulating = false;
 var randomWords = [];
 
+
+// static
+
+soundManager.onready(function() {
+        
+        var s = soundManager.createSound({
+            id: 'staticAudio',
+            url: './public/static.mp3'
+        });
+
+        loopSound(s);
+
+        function loopSound(sound) {
+          sound.play({
+            onfinish: function() {
+              loopSound(sound);
+            }
+          });
+        }
+
+    });
+
+
+
 // when you hit next, if there's a video id in sessionstorage, immediately play that video, then find another suitable id and put it in sessionstorage
 //                    if there isn't a video id in sessionstoage, find TWO suitable ids, play one, and stick the other in sessionstorage
 
@@ -234,8 +258,10 @@ function onPlayerStateChange(event) {
   if(event.data == YT.PlayerState.PLAYING) {
     $('#nextImg').removeClass('animated bounceOutDown');
     $('#static').hide();
+    soundManager.mute();
   } else {
     $('#static').show();
+    soundManager.unmute();
   }
 }
 
