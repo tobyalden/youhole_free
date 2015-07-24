@@ -44,7 +44,6 @@ function getRandomPhrase() {
       return nonsenseLatin();
     } else {
       var word = randomWords.pop();
-      console.log("POP: " + word);
       return word;
     }
 
@@ -53,7 +52,6 @@ function getRandomPhrase() {
 }
 
 function populateRandomWords() {
-  console.log('populateRandomWords called...');
   isPopulating = true;
   var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=3&maxLength=10&limit=1000&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
   $.ajax({
@@ -81,10 +79,8 @@ function populateRandomWordsHelper(data) {
 function nextVideo() {
   var nextVideoId = sessionStorage.getItem('nextVideoId');
   if(nextVideoId === null) {
-    console.log('nextVideoId not found in sessionStorage. Calling findAndPlayVideo() & findAndStoreVideo().');
     findAndPlayVideo();
   } else {
-    console.log('nextVideoId found in sessionstorage. Calling playVideo(nextVideoId) & findAndStoreVideo()')
     playVideo(nextVideoId);
     sessionStorage.removeItem('nextVideoId')
     findAndStoreVideo();
@@ -96,9 +92,7 @@ function playVideo(id) {
 }
 
 function findAndPlayVideo() {
-  console.log('findAndPlayVideo() was called.')
   var word = getRandomPhrase();
-  console.log('[PLAY] word = ' + decodeURIComponent(word));
   var requestStr = 'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=' + word + '&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60';
   $.ajax({
       type: "GET",
@@ -111,22 +105,17 @@ function findAndPlayVideo() {
 
 function findAndPlayVideoHelper(responseJSON) {
   if (responseJSON.items.length < 1) {
-    console.log("[PLAY] No videos found for search term. Restarting search.");
     findAndPlayVideo();
   } else {
     var videoChoice = Math.floor(Math.random() * responseJSON.items.length);
-    // console.log("choosing video #" + videoChoice + " of " + responseJSON.items.length);
     var videoId = responseJSON.items[videoChoice].id.videoId;
     var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
     $.getJSON(url2).then(function(responseJSON2) {
       if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
-        console.log("[PLAY] View count too high. Restarting search.");
         findAndPlayVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
-        console.log("[PLAY] Title and/or description contains blacklisted word. Restarting search.")
         findAndPlayVideo();
       } else {
-        console.log("[PLAY] Success with " + algoNames[currentAlgo-1] + "! Storing video ID.");
         successMetrics[currentAlgo-1] += 1;
         player.loadVideoById(responseJSON2.items[0].id);
         findAndStoreVideo();
@@ -136,10 +125,7 @@ function findAndPlayVideoHelper(responseJSON) {
 }
 
 function findAndStoreVideo() {
-
-  console.log('findAndStoreVideo() was called.')
   var word = getRandomPhrase();
-  console.log('[STORE] word = ' + decodeURIComponent(word));
   var requestStr = 'https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&q=' + word + '&type=video&maxResults=50&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60';
   $.ajax({
       type: "GET",
@@ -148,27 +134,21 @@ function findAndStoreVideo() {
       contentType: "application/json; charset=utf-8",
       jsonpCallback: 'findAndStoreVideoHelper'
   });
-
 }
 
 function findAndStoreVideoHelper(responseJSON) {
   if (responseJSON.items.length < 1) {
-    console.log("[STORE] No videos found for search term. Restarting search.");
     findAndStoreVideo();
   } else {
     var videoChoice = Math.floor(Math.random() * responseJSON.items.length);
-    // console.log("choosing video #" + videoChoice + " of " + responseJSON.items.length);
     var videoId = responseJSON.items[videoChoice].id.videoId;
     var url2 = "https://www.googleapis.com/youtube/v3/videos?part=snippet%2C+statistics&id=" + videoId + "&key=AIzaSyAHu80T94GGhKOzjBs9z5yr0KU8v48Zh60";
     $.getJSON(url2).then(function(responseJSON2) {
       if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
-        console.log("[STORE] View count too high. Restarting search.");
         findAndStoreVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
-        console.log("[STORE] Title and/or description contains blacklisted word. Restarting search.")
         findAndStoreVideo();
       } else {
-        console.log("[STORE] Success with " + algoNames[currentAlgo-1] + "! Storing video ID.");
         successMetrics[currentAlgo-1] += 1;
         sessionStorage.setItem('nextVideoId', responseJSON2.items[0].id);
         // findAndStoreVideo();
@@ -219,7 +199,6 @@ function onYouTubeIframeAPIReady() {
 }
 
 function onError(event) {
-  console.log("Error encountered. Retrying.");
   nextVideo();
 }
 
@@ -231,7 +210,6 @@ function onPlayerReady(event) {
     $("#next").click(function(event) {
       event.preventDefault();
       $('#nextImg').addClass('animated bounceOutDown');
-      console.log("nextVideo clicked");
       nextVideo();
     });
 
@@ -241,7 +219,6 @@ function onPlayerReady(event) {
       if (match && match[2].length == 11) {
         return match[2];
       } else {
-        console.log("Error: Invalid URL");
       }
     }
 }
