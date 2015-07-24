@@ -7,12 +7,19 @@ var successMetrics = [0, 0, 0, 0, 0, 0, 0, 0];
 var algoNames = ['nonsenseWord', 'nonsenseChinesePhrase', 'nonsenseJapanesePhrase', 'nonsenseCyrillic',
                 'randomCharacters', 'nonsenseHangul', 'nonsenseArabic', 'nonsenseLatin'];
 
+var isPopulating = false;
+var randomWords = [];
+
 // when you hit next, if there's a video id in sessionstorage, immediately play that video, then find another suitable id and put it in sessionstorage
 //                    if there isn't a video id in sessionstoage, find TWO suitable ids, play one, and stick the other in sessionstorage
 
 function getRandomPhrase() {
 
-  algo = Math.floor(Math.random() * 8) + 1;
+  if(randomWords.length === 0 && !isPopulating) {
+    populateRandomWords();
+  }
+
+  algo = Math.floor(Math.random() * 9) + 1;
   currentAlgo = algo;
 
   if(algo === 1) {
@@ -31,9 +38,45 @@ function getRandomPhrase() {
     return nonsenseArabic();
   } else if(algo === 8) {
     return nonsenseLatin(); // 2
+  } else if (algo === 9) {
+
+    if(randomWords.length === 0) {
+      return nonsenseLatin();
+    } else {
+      var word = randomWords.pop();
+      console.log("POP: " + word);
+      return word;
+    }
+
   }
 
 }
+
+function populateRandomWords() {
+  console.log('populateRandomWords called...');
+  isPopulating = true;
+  var requestStr = 'http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&minCorpusCount=0&minLength=3&maxLength=10&limit=1000&api_key=a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5';
+  $.ajax({
+      type: "GET",
+      url: requestStr,
+      dataType: "jsonp",
+      jsonpCallback: 'populateRandomWordsHelper'
+  });
+}
+
+function populateRandomWordsHelper(data) {
+  var newRandomWords = '';
+  for(var i = 0; i < data.length; i++) {
+    newRandomWords += data[i].word;
+    if(i < data.length - 1) {
+      newRandomWords += "~";
+    }
+  }
+  randomWords = newRandomWords.split('~');
+  randomWords = shuffle(randomWords);
+  isPopulating = false;
+}
+
 
 function nextVideo() {
   var nextVideoId = sessionStorage.getItem('nextVideoId');
@@ -323,4 +366,23 @@ function getRandomEthiopic() {
 
 function getRandomArabic() {
   return String.fromCharCode(0x0600 + Math.random() * (0x0600-0x06FF+1))
+}
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
