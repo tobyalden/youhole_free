@@ -3,6 +3,17 @@ body  {
   overflow: hidden;
 }
 
+#static{
+  background-image: url(../public/img/static.gif);
+  width:100vw;
+  height:100vh;
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  z-index: 1;
+  opacity: 1;
+}
+
 #overlay{
   width:100vw;
   height:100vh;

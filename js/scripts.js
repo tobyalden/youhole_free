@@ -230,8 +230,12 @@ var done = false;
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
     nextVideo();
-  } else if(event.data == YT.PlayerState.PLAYING) {
+  } 
+  if(event.data == YT.PlayerState.PLAYING) {
     $('#nextImg').removeClass('animated bounceOutDown');
+    $('#static').hide();
+  } else {
+    $('#static').show();
   }
 }
 
