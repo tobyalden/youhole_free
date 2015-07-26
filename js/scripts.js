@@ -16,6 +16,7 @@ function onYouTubeIframeAPIReady() {
     playerVars: {
       'showinfo': 0,
       'controls': 0,
+      'disablekb': 0,
       'rel': 0,
       'showinfo': 0
     },
@@ -52,6 +53,11 @@ function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
     nextVideo();
   }
+
+  if(event.data == YT.PlayerState.PLAYING) {
+    acceptingInput = true;
+    toggleStatic();
+  }
 }
 
 // Loads and starts playing static SFX
@@ -71,8 +77,8 @@ soundManager.onready(function() {
 });
 
 function toggleStatic() {
-  $('#overlay').toggleClass('static-on');
-  $('#overlay').toggleClass('static-off');
+  $('#static').toggleClass('static-on');
+  $('#static').toggleClass('static-off');
   soundManager.toggleMute('staticAudio');
 }
 
@@ -88,10 +94,15 @@ var viewCountThreshold = 500;
 var randomWords = [];
 var isPopulating = false;
 
+var acceptingInput = false;
+
 $(document).on("keydown", function (e) {
-  if(e.keyCode === 32 || e.keyCode === 40) {
-    // nextVideo();
-    toggleStatic();
+  if(acceptingInput) {
+    if(e.keyCode === 32 || e.keyCode === 40) {
+      nextVideo();
+      toggleStatic();
+      acceptingInput = false;
+    }
   }
 });
 
