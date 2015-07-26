@@ -18,7 +18,8 @@ function onYouTubeIframeAPIReady() {
       'controls': 0,
       'disablekb': 0,
       'rel': 0,
-      'showinfo': 0
+      'showinfo': 0,
+      'modestbranding': 1
     },
     events: {
       'onReady': onPlayerReady,
@@ -34,23 +35,15 @@ function onError(event) {
 
 // The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-
     nextVideo();
-
-    function getIdFromUrl(url) {
-      var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-      var match = url.match(regExp);
-      if (match && match[2].length == 11) {
-        return match[2];
-      } else {
-      }
-    }
 }
 
 // The API calls this function when the player's state changes.
 var done = false;
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
+    acceptingInput = false;
+    toggleStatic();
     nextVideo();
   }
 
