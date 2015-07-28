@@ -99,6 +99,16 @@ $(document).on("keydown", function (e) {
   }
 });
 
+$(document).click(function(e) {
+  if(acceptingInput) {
+    if (e.button == 0) {
+      nextVideo();
+      toggleStatic();
+      acceptingInput = false;
+    }
+  }
+});
+
 // Go to the next video. Called when the current video finishes or the user hits next.
 function nextVideo() {
   var nextVideoId = sessionStorage.getItem('nextVideoId');
