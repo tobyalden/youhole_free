@@ -124,6 +124,32 @@ function nextVideo() {
 // Immediately play the video with the given id.
 function playVideo(id) {
   player.loadVideoById(id);
+  addToPrevWatched(id);
+}
+
+function addToPrevWatched(id) {
+  var prevWatched = localStorage.getItem("youHolePrevWatched");
+  if(prevWatched === null) {
+    prevWatched = id;
+  } else {
+    prevWatched = prevWatched.concat('~' + id);
+  }
+  localStorage.setItem('youHolePrevWatched', prevWatched);
+}
+
+function isPrevWatched(id) {
+  var prevWatched = localStorage.getItem("youHolePrevWatched");
+  if(prevWatched === null) {
+    return false;
+  } else {
+    var prevWatchedArray = prevWatched.split("~");
+    for(var i = 0; i < prevWatchedArray.length; i++) {
+      if(id === prevWatchedArray[i]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 // Returns a randomly generated "seed" to use as a search term.
@@ -184,8 +210,11 @@ function findAndPlayVideoHelper(responseJSON) {
         findAndPlayVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
         findAndPlayVideo();
+      } else if(isPrevWatched(responseJSON2.items[0].id)) {
+        findAndPlayVideo();
       } else {
         player.loadVideoById(responseJSON2.items[0].id);
+        addToPrevWatched(responseJSON2.items[0].id);
         findAndStoreVideo();
       }
     });
@@ -216,6 +245,8 @@ function findAndStoreVideoHelper(responseJSON) {
       if(responseJSON2.items[0].statistics.viewCount > viewCountThreshold) {
         findAndStoreVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
+        findAndStoreVideo();
+      } else if(isPrevWatched(responseJSON2.items[0].id)) {
         findAndStoreVideo();
       } else {
         sessionStorage.setItem('nextVideoId', responseJSON2.items[0].id);
