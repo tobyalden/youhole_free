@@ -1,3 +1,7 @@
+// ---------------------------- FIREBASE I/O ----------------------------
+
+var db = new Firebase("https://youhole.firebaseio.com/prevWatched");
+
 // ---------------------------- LOADING THE YOUTUBE API AND CREATING THE PLAYER ----------------------------
 
 // This code loads the IFrame Player API code asynchronously.
@@ -49,6 +53,7 @@ function onPlayerStateChange(event) {
 
   if(event.data == YT.PlayerState.PLAYING) {
     acceptingInput = true;
+    player.unMute()
     toggleStatic();
   }
 }
@@ -92,9 +97,7 @@ var acceptingInput = false;
 $(document).on("keydown", function (e) {
   if(acceptingInput) {
     if(e.keyCode === 32 || e.keyCode === 40) {
-      nextVideo();
-      toggleStatic();
-      acceptingInput = false;
+      goDeeper();
     }
   }
 });
@@ -102,12 +105,17 @@ $(document).on("keydown", function (e) {
 $(document).click(function(e) {
   if(acceptingInput) {
     if (e.button == 0) {
-      nextVideo();
-      toggleStatic();
-      acceptingInput = false;
+      goDeeper();
     }
   }
 });
+
+function goDeeper() {
+  nextVideo();
+  toggleStatic();
+  player.mute()
+  acceptingInput = false;
+}
 
 // Go to the next video. Called when the current video finishes or the user hits next.
 function nextVideo() {
@@ -125,31 +133,6 @@ function nextVideo() {
 function playVideo(id) {
   player.loadVideoById(id);
   addToPrevWatched(id);
-}
-
-function addToPrevWatched(id) {
-  var prevWatched = localStorage.getItem("youHolePrevWatched");
-  if(prevWatched === null) {
-    prevWatched = id;
-  } else {
-    prevWatched = prevWatched.concat('~' + id);
-  }
-  localStorage.setItem('youHolePrevWatched', prevWatched);
-}
-
-function isPrevWatched(id) {
-  var prevWatched = localStorage.getItem("youHolePrevWatched");
-  if(prevWatched === null) {
-    return false;
-  } else {
-    var prevWatchedArray = prevWatched.split("~");
-    for(var i = 0; i < prevWatchedArray.length; i++) {
-      if(id === prevWatchedArray[i]) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 // Returns a randomly generated "seed" to use as a search term.
@@ -210,15 +193,49 @@ function findAndPlayVideoHelper(responseJSON) {
         findAndPlayVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
         findAndPlayVideo();
-      } else if(isPrevWatched(responseJSON2.items[0].id)) {
-        findAndPlayVideo();
       } else {
-        player.loadVideoById(responseJSON2.items[0].id);
-        addToPrevWatched(responseJSON2.items[0].id);
-        findAndStoreVideo();
+        // if it was previously watched, findAndPlayVideo()
+        // otherwise do the shit below
+        checkIfPrevWatched(responseJSON2.items[0].id, true);
       }
     });
   }
+}
+
+function checkIfPrevWatched(videoId, isPlayingImmediately) {
+  db.child(videoId).once('value', function(snapshot) {
+    var exists = (snapshot.val() !== null);
+    prevWatchedCallback(videoId, exists, isPlayingImmediately);
+  });
+}
+
+function prevWatchedCallback(videoId, exists, isPlayingImmediately) {
+  if (isPlayingImmediately) {
+    if (exists) {
+      console.log("[PLAY] Previously watched. Skipping.");
+      findAndPlayVideo();
+    } else {
+      console.log("[PLAY] Never been watched. Adding to prevWatched.");
+      player.loadVideoById(videoId);
+      addToPrevWatched(videoId);
+      findAndStoreVideo();
+    }
+  } else {
+    if (exists) {
+      console.log("[STORE] Previously watched. Skipping.");
+      findAndStoreVideo();
+    } else {
+      console.log("[STORE] Never been watched. Adding to prevWatched.");
+      sessionStorage.setItem('nextVideoId', videoId);
+      addToPrevWatched(videoId);
+    }
+  }
+}
+
+function addToPrevWatched(videoId) {
+  db.push({
+    id: videoId
+  });
 }
 
 // Finds a video and stores its id in sessionStorage.
@@ -246,10 +263,8 @@ function findAndStoreVideoHelper(responseJSON) {
         findAndStoreVideo();
       } else if(isBlacklisted(responseJSON2.items[0].snippet.title, responseJSON2.items[0].snippet.description)) {
         findAndStoreVideo();
-      } else if(isPrevWatched(responseJSON2.items[0].id)) {
-        findAndStoreVideo();
       } else {
-        sessionStorage.setItem('nextVideoId', responseJSON2.items[0].id);
+        checkIfPrevWatched(responseJSON2.items[0].id, false);
       }
     });
   }
