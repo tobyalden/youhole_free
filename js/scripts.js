@@ -64,7 +64,6 @@ var done = false;
 function onPlayerStateChange(event) {
   if (event.data == YT.PlayerState.ENDED) {
     acceptingInput = false;
-    console.log("player state change: ended")
     toggleStatic();
     nextVideo();
   }
@@ -72,7 +71,6 @@ function onPlayerStateChange(event) {
   if(event.data == YT.PlayerState.PLAYING) {
     acceptingInput = true;
     player.unMute()
-    console.log("player state change: playing")
     toggleStatic();
   }
 }
@@ -99,7 +97,6 @@ soundManager.onready(function() {
 //
 // }
 function toggleStatic() {
-  console.log("Toggle Static")
   $('#static').toggleClass('static-on');
   $('#static').toggleClass('static-off');
   soundManager.toggleMute('staticAudio');
@@ -118,7 +115,6 @@ $(document).on("keydown", function (e) {
 });
 
 $(document).on("touchend", function (e) {
-  console.log("touchend")
   if (acceptingInput) {
       goDeeper();
 
@@ -137,7 +133,6 @@ $(document).click(function(e) {
 
 function goDeeper() {
   nextVideo();
-      console.log("Go deeper called")
   toggleStatic();
   player.mute()
   acceptingInput = false;
