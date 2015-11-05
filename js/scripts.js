@@ -93,6 +93,7 @@ var randomWords = [];
 var isPopulating = false;
 
 var acceptingInput = false;
+var mobileStartFlag = false; //workaround flag for mobile not supporting autoplay on initial page load.
 
 $(document).on("keydown", function (e) {
   if(acceptingInput) {
@@ -102,11 +103,18 @@ $(document).on("keydown", function (e) {
   }
 });
 
+$(document).on("touchend", function (e) {
+  if (!mobileStartFlag) {
+    mobileStartFlag = true;
+    nextVideo();
+  } else if (acceptingInput) {
+        goDeeper();
+  }
+});
+
 $(document).click(function(e) {
   if(acceptingInput) {
-    if (e.button == 0) {
       goDeeper();
-    }
   }
 });
 
